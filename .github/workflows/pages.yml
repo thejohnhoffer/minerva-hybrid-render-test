@@ -38,5 +38,4 @@ jobs:
       - name: Deploy GitHub Pages site
         uses: actions/deploy-pages@v1.0.8
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
           artifact_name: github-pages
