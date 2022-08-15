@@ -9,6 +9,7 @@ jobs:
     steps:
       - name: Build with NPM
         run: |
+          npm install
           npm run build
       - name: Deploy GitHub Pages site
         uses: actions/deploy-pages@v1.0.8
