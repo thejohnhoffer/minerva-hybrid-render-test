@@ -1,0 +1,17 @@
+name: Github Pages
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build with NPM
+        run: |
+          npm run build
+      - name: Deploy GitHub Pages site
+        uses: actions/deploy-pages@v1.0.8
+        with:
+          token: ${{ github.token }}
+          artifact_name: build
