@@ -1,47 +1,8 @@
-import { OrthographicView } from '@deck.gl/core';
-import { TileLayer } from '@deck.gl/geo-layers';
-import { BitmapLayer } from '@deck.gl/layers';
-import { load } from '@loaders.gl/core';
-import { ImageLoader } from '@loaders.gl/images';
-import GL from '@luma.gl/constants';
-import Deck from 'deck.gl';
 import React, { useState } from 'react';
 import { HsvColorPicker } from 'react-colorful';
+import { DeckView } from './components/deckView.js';
 
 import './styles.css';
-
-function createTileLayer(meta, subpath, color, visible) {
-  return new TileLayer({
-    id: subpath,
-    visible: visible,
-    tileSize: meta.tileSize,
-    minZoom: -meta.maxLevel,
-    maxZoom: 0,
-    extent: [0, 0, meta.width, meta.height],
-    color: color,
-    getTileData: ({ x, y, z }) => {
-      if (x < 0 || y < 0) return null;
-      return load(`${meta.path}/${subpath}/${-z}_${x}_${y}.jpg`, ImageLoader);
-    },
-    renderSubLayers: (props) => {
-      const { left, bottom, right, top } = props.tile.bbox;
-      const { x, y, z } = props.tile;
-      const color = props.color;
-      return new BitmapLayer({
-        id: `${subpath}-${z}-${x}-${y}`,
-        image: props.data,
-        bounds: [left, Math.min(bottom, meta.height), Math.min(right, meta.width), top],
-        parameters: {
-          depthTest: false,
-          blend: true,
-          blendFunc: [GL.CONSTANT_COLOR, GL.ONE, GL.ONE, GL.ONE],
-          blendColor: color,
-          blendEquation: GL.FUNC_ADD,
-        },
-      });
-    },
-  });
-}
 
 function ChannelControl(props) {
   const { name, color, setColor, visible, toggleVisible } = props;
@@ -66,10 +27,6 @@ const imageSource = {
   path: 'data/tonsil',
 };
 
-function channelLayer(subpath, color, visible) {
-  return createTileLayer(imageSource, subpath, color, visible);
-}
-
 function hsv2gl ({ h, s, v }) {
   h = (h / 360) * 6;
   s = s / 100;
@@ -91,55 +48,66 @@ function hue2hsv(h) {
   return { h: h, s: 100, v: 100};
 }
 
+function Controls(props) {
+  const controls = props.names.map((name, i) => {
+    const color = props.colors[i];
+    const visible = props.visibles[i];
+    const setColor = props.setColor(i);
+    const toggleVisible = props.setVisible(i);
+    return (
+      <ChannelControl {...{ name, color, setColor, visible, toggleVisible }} />
+    );
+  });
+  return <div className='channel-list'>{controls}</div>;
+}
+
 function App() {
   const [viewState, setViewState] = useState({ zoom: -2, target: [imageSource.width / 2, imageSource.height / 2, 0]});
-  const [color1, setColor1] = useState(hue2hsv(240));
-  const [color2, setColor2] = useState(hue2hsv(0));
-  const [color3, setColor3] = useState(hue2hsv(40));
-  const [color4, setColor4] = useState(hue2hsv(80));
-  const [color5, setColor5] = useState(hue2hsv(120));
-  const [color6, setColor6] = useState(hue2hsv(160));
-  const [color7, setColor7] = useState(hue2hsv(200));
-  const [color8, setColor8] = useState(hue2hsv(280));
-  const [color9, setColor9] = useState(hue2hsv(320));
-  const [visible, setVisible] = useState([true, true, true, false, false, true, false, true, false]);
-  const toggleVisibleI = (i) => () => {
-    const newVisible = [...visible];
+  const defaultColors = [
+    hue2hsv(240), hue2hsv(0), hue2hsv(40),
+    hue2hsv(80), hue2hsv(120), hue2hsv(160),
+    hue2hsv(200), hue2hsv(280), hue2hsv(320)
+  ];
+  const defaultVisible = [
+    true, true, true, false, false, true, false, true, false
+  ];
+  const [colors, setColors] = useState(defaultColors);
+  const [visibles, setVisibles] = useState(defaultVisible);
+  const setColor = (i) => {
+    return (color) => {
+      const newColors = [...colors];
+      newColors[i] = color;
+      setColors(newColors);
+    }
+  }
+  const setVisible = (i) => () => {
+    const newVisible = [...visibles];
     newVisible[i] = !newVisible[i];
-    setVisible(newVisible);
+    setVisibles(newVisible);
   };
-  return (
-    <>
-      <Deck
-        layers={[
-          channelLayer('DNA_0__DNA', hsv2gl(color1), visible[0]),
-          channelLayer('Ki-67_1__Ki-67', hsv2gl(color2), visible[1]),
-          channelLayer('Keratin_2__Keratin', hsv2gl(color3), visible[2]),
-          channelLayer('CD3D_3__CD3D', hsv2gl(color4), visible[3]),
-          channelLayer('CD4_4__CD4', hsv2gl(color5), visible[4]),
-          channelLayer('CD45_5__CD45', hsv2gl(color6), visible[5]),
-          channelLayer('CD8A_6__CD8A', hsv2gl(color7), visible[6]),
-          channelLayer('-SMA_7__-SMA', hsv2gl(color8), visible[7]),
-          channelLayer('CD20_8__CD20', hsv2gl(color9), visible[8]),
-        ]}
-        views={[new OrthographicView({ id: 'ortho', controller: true })]}
-        viewState={viewState}
-        onViewStateChange={e => setViewState(e.viewState)}
-        controller={true}
-      />
-      <div className='channel-list'>
-        <ChannelControl name='DNA' color={color1} setColor={setColor1} visible={visible[0]} toggleVisible={toggleVisibleI(0)} />
-        <ChannelControl name='Ki-67' color={color2} setColor={setColor2} visible={visible[1]} toggleVisible={toggleVisibleI(1)} />
-        <ChannelControl name='Keratin' color={color3} setColor={setColor3} visible={visible[2]} toggleVisible={toggleVisibleI(2)} />
-        <ChannelControl name='CD3D' color={color4} setColor={setColor4} visible={visible[3]} toggleVisible={toggleVisibleI(3)} />
-        <ChannelControl name='CD4' color={color5} setColor={setColor5} visible={visible[4]} toggleVisible={toggleVisibleI(4)} />
-        <ChannelControl name='CD45' color={color6} setColor={setColor6} visible={visible[5]} toggleVisible={toggleVisibleI(5)} />
-        <ChannelControl name='CD8A' color={color7} setColor={setColor7} visible={visible[6]} toggleVisible={toggleVisibleI(6)} />
-        <ChannelControl name='&alpha;SMA' color={color8} setColor={setColor8} visible={visible[7]} toggleVisible={toggleVisibleI(7)} />
-        <ChannelControl name='CD20' color={color9} setColor={setColor9} visible={visible[8]} toggleVisible={toggleVisibleI(8)} />
-    </div>
-    </>
-  );
+  const names = [
+    'DNA', 'Ki-67', 'Keratin', 'CD3D', 'CD4',
+    'CD45', 'CD8A', 'αSMA', 'CD20'
+  ]
+  const paths = [
+    'DNA_0__DNA', 'Ki-67_1__Ki-67', 'Keratin_2__Keratin',
+    'CD3D_3__CD3D', 'CD4_4__CD4', 'CD45_5__CD45',
+    'CD8A_6__CD8A', '-SMA_7__-SMA', 'CD20_8__CD20'
+  ]
+  const channelSources = paths.map((path, i) => {
+    const [ color, visible ] = [hsv2gl(colors[i]), visibles[i]];
+    return { path, color, visible };
+  });
+  const deckProps = {
+    viewState, imageSource, channelSources
+  };
+  const controlProps = {
+    names, colors, visibles, setColor, setVisible
+  }
+  return (<>
+    <DeckView {...deckProps}/>
+    <Controls {...controlProps}/>
+  </>);
 }
 
 export default App;

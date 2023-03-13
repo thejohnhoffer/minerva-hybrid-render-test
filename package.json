@@ -4,7 +4,14 @@
     "build": "snowpack build"
   },
   "dependencies": {
+    "@deck.gl/core": "^8.9.1",
+    "@deck.gl/geo-layers": "^8.9.1",
+    "@deck.gl/layers": "^8.9.1",
+    "@loaders.gl/core": "^3.3.1",
+    "@loaders.gl/images": "^3.3.1",
+    "@luma.gl/constants": "^8.5.18",
     "deck.gl": "^8.4.9",
+    "openseadragon": "2.4.2",
     "react": "^17.0.0",
     "react-colorful": "^5.5.1",
     "react-dom": "^17.0.0"
