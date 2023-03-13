@@ -14,7 +14,8 @@
     "openseadragon": "2.4.2",
     "react": "^17.0.0",
     "react-colorful": "^5.5.1",
-    "react-dom": "^17.0.0"
+    "react-dom": "^17.0.0",
+    "styled-components": "^5.3.8"
   },
   "devDependencies": {
     "@snowpack/plugin-react-refresh": "^2.4.0",

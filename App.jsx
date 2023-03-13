@@ -1,8 +1,23 @@
 import React, { useState } from 'react';
 import { HsvColorPicker } from 'react-colorful';
+import { OsdView } from './components/osdView.js';
 import { DeckView } from './components/deckView.js';
+import styled from "styled-components";
 
 import './styles.css';
+
+const Main = styled.div`
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  > div {
+    grid-row: 1 / -1;
+    grid-column: 1 / -1;
+  }
+  > .channel-list {
+    grid-row: 1;
+  }
+`;
 
 function ChannelControl(props) {
   const { name, color, setColor, visible, toggleVisible } = props;
@@ -54,8 +69,9 @@ function Controls(props) {
     const visible = props.visibles[i];
     const setColor = props.setColor(i);
     const toggleVisible = props.setVisible(i);
+    const key = `channel-control-${i}`;
     return (
-      <ChannelControl {...{ name, color, setColor, visible, toggleVisible }} />
+      <ChannelControl key={key} {...{ name, color, setColor, visible, toggleVisible }} />
     );
   });
   return <div className='channel-list'>{controls}</div>;
@@ -98,16 +114,21 @@ function App() {
     const [ color, visible ] = [hsv2gl(colors[i]), visibles[i]];
     return { path, color, visible };
   });
-  const deckProps = {
-    viewState, imageSource, channelSources
-  };
+  const seaProps = { imageSource, channelSources };
+  const deckProps = { ...seaProps, viewState };
   const controlProps = {
     names, colors, visibles, setColor, setVisible
   }
-  return (<>
+  if (true) {
+    return (<Main>
+      <OsdView {...seaProps}/>
+      <Controls {...controlProps}/>
+    </Main>);
+  }
+  return (<Main>
     <DeckView {...deckProps}/>
     <Controls {...controlProps}/>
-  </>);
+  </Main>);
 }
 
 export default App;
