@@ -11,11 +11,11 @@
     "@loaders.gl/images": "^3.3.1",
     "@luma.gl/constants": "^8.5.18",
     "deck.gl": "^8.4.9",
-    "openseadragon": "2.4.2",
     "react": "^17.0.0",
     "react-colorful": "^5.5.1",
     "react-dom": "^17.0.0",
-    "styled-components": "^5.3.8"
+    "styled-components": "^5.3.8",
+    "viawebgl": "github:thejohnhoffer/viaWebGL#89f77f43134f2d7deb88199570df925ea08cef72"
   },
   "devDependencies": {
     "@snowpack/plugin-react-refresh": "^2.4.0",

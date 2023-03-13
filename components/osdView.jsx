@@ -27,9 +27,10 @@ const useEl = ({current}) => {
 const OsdView = (props) => {
   const rootRef = useRef();
   const {channelSources, imageSource} = props;
+  const {tileShape, setTileShape} = props;
 
   const [cache, setCache] = useState({
-    context: null,
+    cached: null,
     redraw: false,
   });
   const [el, setEl] = useState(useEl(rootRef));
@@ -37,10 +38,16 @@ const OsdView = (props) => {
     element: el,
   };
 
-  const {context} = cache;
+  const {cached} = cache;
   const update = useUpdate({setCache});
-  const opts = {config, imageSource, update, channelSources};
-  const firstDraw = !context?.viewport;
+  const opts = {
+    config, imageSource, update, channelSources,
+    tileShape, setTileShape
+  };
+  const firstDraw = !cached?.context?.viewport;
+  if (cached?.context) {
+    cached.updateSettings(opts);
+  }
 
   useEffect(() => {
     setEl(useEl(rootRef))
@@ -56,8 +63,8 @@ const OsdView = (props) => {
 
   useEffect(() => {
     if (cache.redraw && el) {
-      const next = context.reset(opts);
-      update({redraw: false, context: next});
+      const next = cached.context.reset(opts);
+      update({redraw: false, cached: next});
     }
   }, [cache.redraw, el]);
 
@@ -68,7 +75,7 @@ const OsdView = (props) => {
   useEffect(() => {
     if (ready && firstDraw) {
       const next = OpenSeadragonContext(opts);
-      update({context: next});
+      update({cached: next});
     }
   }, [ready, firstDraw]);
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { HsvColorPicker } from 'react-colorful';
-import { OsdView } from './components/osdView.js';
+import { SeaView } from './components/seaView.js';
 import { DeckView } from './components/deckView.js';
 import styled from "styled-components";
 
@@ -78,14 +78,18 @@ function Controls(props) {
 }
 
 function App() {
-  const [viewState, setViewState] = useState({ zoom: -2, target: [imageSource.width / 2, imageSource.height / 2, 0]});
+  const [useDeck, setUseDeck ] = useState(false);
+  const defaultViewState = {
+    zoom: -2, target: [imageSource.width / 2, imageSource.height / 2, 0]
+  }
+  const [viewState, setViewState] = useState(defaultViewState);
   const defaultColors = [
     hue2hsv(240), hue2hsv(0), hue2hsv(40),
     hue2hsv(80), hue2hsv(120), hue2hsv(160),
     hue2hsv(200), hue2hsv(280), hue2hsv(320)
   ];
   const defaultVisible = [
-    true, true, true, false, false, true, false, true, false
+    true, false, false, false, false, false, false, false, false
   ];
   const [colors, setColors] = useState(defaultColors);
   const [visibles, setVisibles] = useState(defaultVisible);
@@ -119,9 +123,9 @@ function App() {
   const controlProps = {
     names, colors, visibles, setColor, setVisible
   }
-  if (true) {
+  if (!useDeck) {
     return (<Main>
-      <OsdView {...seaProps}/>
+      <SeaView {...seaProps}/>
       <Controls {...controlProps}/>
     </Main>);
   }
