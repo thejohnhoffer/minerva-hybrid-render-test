@@ -4,7 +4,7 @@
 
 .channel-list .react-colorful__saturation,
 .channel-list .react-colorful__alpha {
-  display: none;
+  display:none;
   height: 0;
   width: 0;
 }
@@ -22,11 +22,13 @@
 .channel-list {
   display: grid;
   grid-auto-rows: 20px;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: 75px min-content;
   column-gap: 10px;
   align-items: center;
-  grid-column: 1;
-  grid-row: 2;
+  background: rgba(0, 0, 0, 0.5);
+  position: relative;
+  width: min-content;
+  padding: 0.5em;
 }
 
 .channel-label {
@@ -40,53 +42,3 @@
   color: #ffffff;
   font-weight: bold;
 }
-
-.nav-panel {
-  display: grid;
-  position: relative;
-  pointer-events: none;
-  grid-template-columns: auto 1fr;
-  grid-template-rows: auto;
-}
-
-.no-nav {
-  opacity: 0.2;
-}
-
-.nav-panel > * {
-  padding: 0.5em;
-  pointer-events: all;
-  background: rgba(0, 0, 0, 0.5);
-}
-
-.two-choices {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-column: 1;
-  grid-row: 1;
-}
-
-.choice {
-  display: flex;
-  cursor: pointer;
-  align-items: center;
-  justify-content: center;
-  font-family: sans-serif;
-  padding: 0.5em;
-  color: white;
-}
-
-.chosen {
-  background-color: #800080;
-}
-
-.info {
-  color: white;
-  font-family: sans-serif;
-  grid-column: 1;
-}
-
-.info > input {
-  width: 100%;
-}
-
