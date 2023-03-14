@@ -89,7 +89,7 @@ function App() {
     hue2hsv(200), hue2hsv(280), hue2hsv(320)
   ];
   const defaultVisible = [
-    true, false, false, false, false, false, false, false, false
+    true, true, true, true, true, true, true, true, true
   ];
   const [colors, setColors] = useState(defaultColors);
   const [visibles, setVisibles] = useState(defaultVisible);
